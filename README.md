@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project analyzes watershed development impacts in Mahabubnagar district between 2004 and 2024 using Google Earth Engine and Landsat satellite imagery.
+This project analyzes watershed development impacts in Rajapet watershed,Wanaparthydistrict between 2004 and 2024 using Google Earth Engine and Landsat satellite imagery.
 
 ## Technologies
 
@@ -11,7 +11,6 @@ This project analyzes watershed development impacts in Mahabubnagar district bet
 - Remote Sensing
 - GIS
 - Landsat 5
-- Landsat 7
 - Landsat 8
 
 ## Features
@@ -24,7 +23,7 @@ This project analyzes watershed development impacts in Mahabubnagar district bet
 
 ## Study Area
 
-Mahabubnagar District, Telangana, India
+Wanaparthy District, Telangana, India
 
 ## Dataset
 
