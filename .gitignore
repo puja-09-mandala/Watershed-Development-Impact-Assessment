@@ -1,0 +1,32 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+*.pem
+
+# Data and bulky outputs (keep structure, ignore rasters/models)
+data/raw/*.tif
+data/raw/*.tiff
+data/processed/
+data/patches/
+data/models/
+outputs/
+web/data/*.png
+web/data/*.tif
+web/data/*.json
+!web/data/.gitkeep
+!data/raw/.gitkeep
+!data/boundary/.gitkeep
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

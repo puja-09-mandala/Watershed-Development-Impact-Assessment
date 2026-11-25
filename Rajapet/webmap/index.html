@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Rajapeta Watershed Analysis</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+}
+
+#header{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:58px;
+    background:white;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    padding-left:20px;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+
+#title{
+    font-size:20px;
+    font-weight:bold;
+    margin-right:30px;
+}
+
+.tab{
+    border:none;
+    background:white;
+    padding:10px 20px;
+    margin-right:5px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.tab.active{
+    background:#1976d2;
+    color:white;
+    border-radius:4px;
+}
+
+#period{
+    position:absolute;
+    top:72px;
+    left:15px;
+    z-index:1000;
+    background:white;
+    padding:8px;
+    border-radius:5px;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+.periodBtn{
+    padding:9px 15px;
+    border:1px solid #ccc;
+    background:white;
+    cursor:pointer;
+    border-radius:4px;
+    margin-right:4px;
+}
+
+.periodBtn.active{
+    background:#333;
+    color:white;
+}
+
+#map{
+    position:absolute;
+    top:58px;
+    left:0;
+    right:0;
+    bottom:0;
+}
+
+#legend{
+    position:absolute;
+    bottom:25px;
+    left:20px;
+    z-index:1000;
+    background:white;
+    padding:12px;
+    width:220px;
+    border-radius:5px;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+#legendTitle{
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+#gradient{
+    width:190px;
+    height:18px;
+}
+
+.labels{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    margin-top:4px;
+}
+
+#status{
+    position:absolute;
+    right:20px;
+    bottom:20px;
+    z-index:1000;
+    background:white;
+    padding:8px 12px;
+    border-radius:4px;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div id="header">
+
+<div id="title">
+Rajapeta Watershed Analysis
+</div>
+
+<button
+class="tab active"
+id="ndviTab"
+onclick="selectVariable('NDVI')">
+NDVI
+</button>
+
+<button
+class="tab"
+id="lstTab"
+onclick="selectVariable('LST')">
+LST
+</button>
+
+<button
+class="tab"
+id="lulcTab"
+onclick="selectVariable('LULC')">
+LULC
+</button>
+
+</div>
+
+
+<!-- PERIOD -->
+
+<div id="period">
+
+<button
+class="periodBtn active"
+id="year2004"
+onclick="selectPeriod('2004')">
+2004
+</button>
+
+<button
+class="periodBtn"
+id="year2024"
+onclick="selectPeriod('2024')">
+2024
+</button>
+
+<button
+class="periodBtn"
+id="changeBtn"
+onclick="selectPeriod('change')">
+Change Analysis
+</button>
+
+</div>
+
+
+<!-- MAP -->
+
+<div id="map"></div>
+
+
+<!-- LEGEND -->
+
+<div id="legend">
+
+<div id="legendTitle">
+NDVI - 2004
+</div>
+
+<div id="gradient"></div>
+
+<div class="labels">
+
+<span id="minValue">
+0
+</span>
+
+<span id="maxValue">
+0.5
+</span>
+
+</div>
+
+</div>
+
+
+<div id="status">
+Loading...
+</div>
+
+
+<!-- LEAFLET -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- GEORASTER -->
+
+<script src="https://unpkg.com/georaster"></script>
+
+<!-- GEORASTER LEAFLET -->
+
+<script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script>
+
+
+<script>
+
+/* =========================================================
+MAP
+========================================================= */
+
+var map = L.map("map").setView(
+    [16.353,78.012],
+    13
+);
+
+
+/* =========================================================
+BASEMAP
+========================================================= */
+
+var topo = L.tileLayer(
+"https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+{
+    attribution:"Esri"
+}
+).addTo(map);
+
+
+var satellite = L.tileLayer(
+"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+{
+    attribution:"Esri"
+});
+
+
+var street = L.tileLayer(
+"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+{
+    attribution:"Esri"
+});
+
+
+L.control.layers({
+
+    "Topographic":topo,
+
+    "Satellite":satellite,
+
+    "Street Map":street
+
+}).addTo(map);
+
+
+/* =========================================================
+RAJAPETA BOUNDARY
+========================================================= */
+
+var boundary = L.rectangle(
+
+[
+    [16.3373007,77.9901160],
+    [16.3688316,78.0367386]
+],
+
+{
+    color:"red",
+    weight:2,
+    fill:false
+}
+
+).addTo(map);
+
+
+/* =========================================================
+VARIABLE
+========================================================= */
+
+var variable = "NDVI";
+
+var period = "2004";
+
+var raster = null;
+
+
+/* =========================================================
+FILES
+========================================================= */
+
+var files = {
+
+NDVI:{
+
+"2004":
+"../GeoTiff/Rajapeta_NDVI_2004.tif",
+
+"2024":
+"../GeoTiff/Rajapeta_NDVI_2024.tif",
+
+"change":
+"../GeoTiff/Rajapeta_NDVI_Change_2004_2024.tif"
+
+},
+
+LST:{
+
+"2004":
+"../GeoTiff/Rajapeta_LST_2004.tif",
+
+"2024":
+"../GeoTiff/Rajapeta_LST_2024.tif",
+
+"change":
+"../GeoTiff/Rajapeta_LST_Change_2004_2024.tif"
+
+}
+
+};
+
+
+/* =========================================================
+PALETTES
+========================================================= */
+
+var ndviColors=[
+"#d73027",
+"#f46d43",
+"#fdae61",
+"#fee08b",
+"#d9ef8b",
+"#a6d96a",
+"#66bd63",
+"#1a9850"
+];
+
+
+var ndviChangeColors=[
+"#8b0000",
+"#d73027",
+"#f46d43",
+"#ffffbf",
+"#a6d96a",
+"#66bd63",
+"#006837"
+];
+
+
+var lstColors=[
+"#313695",
+"#4575b4",
+"#74add1",
+"#abd9e9",
+"#ffffbf",
+"#fdae61",
+"#f46d43",
+"#d73027"
+];
+
+
+var lstChangeColors=[
+"#313695",
+"#4575b4",
+"#74add1",
+"#ffffbf",
+"#fdae61",
+"#f46d43",
+"#d73027"
+];
+
+
+/* =========================================================
+REMOVE OLD RASTER
+========================================================= */
+
+function removeRaster(){
+
+    if(raster){
+
+        map.removeLayer(raster);
+
+        raster=null;
+
+    }
+
+}
+
+
+/* =========================================================
+COLOR FUNCTION
+========================================================= */
+
+function getColorFunction(){
+
+    var colors;
+
+    var min;
+
+    var max;
+
+
+    if(variable==="NDVI"){
+
+        if(period==="change"){
+
+            colors=ndviChangeColors;
+
+            min=-0.25;
+
+            max=0.25;
+
+        }
+        else{
+
+            colors=ndviColors;
+
+            min=0;
+
+            max=0.5;
+
+        }
+
+    }
+
+
+    if(variable==="LST"){
+
+        if(period==="change"){
+
+            colors=lstChangeColors;
+
+            min=-10;
+
+            max=10;
+
+        }
+        else{
+
+            colors=lstColors;
+
+            min=25;
+
+            max=50;
+
+        }
+
+    }
+
+
+    return function(values){
+
+        var value=values[0];
+
+
+        if(
+            value===null ||
+            value===undefined ||
+            isNaN(value)
+        ){
+
+            return null;
+
+        }
+
+
+        var ratio=(value-min)/(max-min);
+
+        ratio=Math.max(
+            0,
+            Math.min(1,ratio)
+        );
+
+
+        var index=Math.floor(
+            ratio*(colors.length-1)
+        );
+
+
+        return colors[index];
+
+    };
+
+}
+
+
+/* =========================================================
+LOAD RASTER
+========================================================= */
+
+function loadRaster(){
+
+    removeRaster();
+
+
+    if(variable==="LULC"){
+
+        document.getElementById("status").innerText=
+        "LULC GeoTIFF not available";
+
+        return;
+
+    }
+
+
+    var url=files[variable][period];
+
+
+    document.getElementById("status").innerText=
+    "Loading "+variable+" "+period+"...";
+
+
+    console.log(
+        "Loading GeoTIFF:",
+        url
+    );
+
+
+    /*
+       IMPORTANT:
+       Direct URL is passed to parseGeoraster.
+    */
+
+    parseGeoraster(url)
+
+    .then(function(georaster){
+
+        console.log(
+            "GeoRaster successfully loaded:",
+            georaster
+        );
+
+
+        raster=new GeoRasterLayer({
+
+            georaster:georaster,
+
+            opacity:0.85,
+
+            resolution:256,
+
+            pixelValuesToColorFn:
+            getColorFunction()
+
+        });
+
+
+        raster.addTo(map);
+
+
+        map.fitBounds(
+            raster.getBounds(),
+            {
+                padding:[20,20]
+            }
+        );
+
+
+        document.getElementById("status").innerText=
+        variable+" - "+getPeriodName();
+
+
+        updateLegend();
+
+    })
+
+
+    .catch(function(error){
+
+        console.error(
+            "GeoTIFF ERROR:",
+            error
+        );
+
+
+        document.getElementById("status").innerText=
+        "GeoTIFF Error";
+
+
+        alert(
+            "GeoTIFF loading failed:\n\n"+
+            error.message
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+PERIOD NAME
+========================================================= */
+
+function getPeriodName(){
+
+    if(period==="2004")
+        return "2004";
+
+    if(period==="2024")
+        return "2024";
+
+    return "Change Analysis";
+
+}
+
+
+/* =========================================================
+VARIABLE SELECT
+========================================================= */
+
+function selectVariable(v){
+
+    variable=v;
+
+
+    document
+    .querySelectorAll(".tab")
+    .forEach(function(btn){
+
+        btn.classList.remove("active");
+
+    });
+
+
+    if(v==="NDVI"){
+
+        document
+        .getElementById("ndviTab")
+        .classList.add("active");
+
+    }
+
+
+    if(v==="LST"){
+
+        document
+        .getElementById("lstTab")
+        .classList.add("active");
+
+    }
+
+
+    if(v==="LULC"){
+
+        document
+        .getElementById("lulcTab")
+        .classList.add("active");
+
+    }
+
+
+    updateLegend();
+
+    loadRaster();
+
+}
+
+
+/* =========================================================
+PERIOD SELECT
+========================================================= */
+
+function selectPeriod(p){
+
+    period=p;
+
+
+    document
+    .querySelectorAll(".periodBtn")
+    .forEach(function(btn){
+
+        btn.classList.remove("active");
+
+    });
+
+
+    if(p==="2004"){
+
+        document
+        .getElementById("year2004")
+        .classList.add("active");
+
+    }
+
+
+    if(p==="2024"){
+
+        document
+        .getElementById("year2024")
+        .classList.add("active");
+
+    }
+
+
+    if(p==="change"){
+
+        document
+        .getElementById("changeBtn")
+        .classList.add("active");
+
+    }
+
+
+    updateLegend();
+
+    loadRaster();
+
+}
+
+
+/* =========================================================
+LEGEND
+========================================================= */
+
+function updateLegend(){
+
+    var title=
+    document.getElementById("legendTitle");
+
+    var gradient=
+    document.getElementById("gradient");
+
+    var min=
+    document.getElementById("minValue");
+
+    var max=
+    document.getElementById("maxValue");
+
+
+    if(variable==="NDVI"){
+
+        if(period==="change"){
+
+            title.innerText=
+            "NDVI Change (2004 → 2024)";
+
+            gradient.style.background=
+            "linear-gradient(to right,"+
+            ndviChangeColors.join(",")+
+            ")";
+
+            min.innerText="-0.25";
+
+            max.innerText="+0.25";
+
+        }
+        else{
+
+            title.innerText=
+            "NDVI - "+period;
+
+            gradient.style.background=
+            "linear-gradient(to right,"+
+            ndviColors.join(",")+
+            ")";
+
+            min.innerText="0";
+
+            max.innerText="0.5";
+
+        }
+
+    }
+
+
+    if(variable==="LST"){
+
+        if(period==="change"){
+
+            title.innerText=
+            "LST Change (°C)";
+
+            gradient.style.background=
+            "linear-gradient(to right,"+
+            lstChangeColors.join(",")+
+            ")";
+
+            min.innerText="-10°C";
+
+            max.innerText="+10°C";
+
+        }
+        else{
+
+            title.innerText=
+            "LST - "+period;
+
+            gradient.style.background=
+            "linear-gradient(to right,"+
+            lstColors.join(",")+
+            ")";
+
+            min.innerText="25°C";
+
+            max.innerText="50°C";
+
+        }
+
+    }
+
+
+    if(variable==="LULC"){
+
+        title.innerText="LULC";
+
+        gradient.style.background=
+        "linear-gradient(to right,#006400,#ffff00,#ff0000,#0000ff)";
+
+        min.innerText="Classes";
+
+        max.innerText="";
+
+    }
+
+}
+
+
+/* =========================================================
+START
+========================================================= */
+
+updateLegend();
+
+loadRaster();
+
+</script>
+
+</body>
+</html>

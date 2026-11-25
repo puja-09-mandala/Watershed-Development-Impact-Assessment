@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM Report | Rajapeta Watershed</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: #f0f2f5; color: #1a1a1a; }
+    .report-topbar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 8px 20px; background: #fff; border-bottom: 1px solid #e0e0e0;
+    }
+    #llm-status { font-size: 12px; color: #444; flex: 1 1 200px; }
+    .report-scroll { overflow-y: auto; height: calc(100% - 44px - 45px); padding: 24px 28px 60px; }
+    .report-inner { max-width: 980px; margin: 0 auto; }
+
+    /* section card */
+    .r-card {
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;
+      padding: 20px 24px; margin-bottom: 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .r-card-title {
+      font-size: 11px; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: #1a73e8;
+      border-bottom: 2px solid #e8f0fe; padding-bottom: 8px; margin-bottom: 14px;
+    }
+    .r-card p { font-size: 13px; color: #444; line-height: 1.75; margin: 0 0 8px; }
+    .r-card p:last-child { margin-bottom: 0; }
+
+    /* meta row */
+    .meta-row { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; color: #555; }
+    .meta-row strong { color: #111; }
+
+    /* stats table */
+    .s-tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 4px; }
+    .s-tbl thead { background: #e8f0fe; }
+    .s-tbl th {
+      padding: 9px 12px; text-align: right; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: #1a73e8;
+      border-bottom: 2px solid #c5d8fb;
+    }
+    .s-tbl th:first-child { text-align: left; }
+    .s-tbl td {
+      padding: 8px 12px; text-align: right; border-bottom: 1px solid #f0f0f0;
+      color: #444; font-variant-numeric: tabular-nums; font-size: 12px;
+    }
+    .s-tbl td:first-child { text-align: left; color: #111; font-weight: 600; }
+    .s-tbl tbody tr:hover td { background: #f5f8ff; }
+    .s-tbl tbody tr:last-child td { border-bottom: none; }
+
+    /* change table */
+    .c-tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    .c-tbl th {
+      padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: #fff;
+      border-bottom: 2px solid rgba(255,255,255,.2);
+    }
+    .c-tbl td { padding: 9px 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,.15); }
+    .c-tbl tbody tr:last-child td { border-bottom: none; }
+    .c-row-inc { background: #e8f5e9; }
+    .c-row-inc td { color: #1b5e20; font-weight: 600; }
+    .c-row-stb { background: #f5f5f5; }
+    .c-row-stb td { color: #555; }
+    .c-row-dec { background: #ffebee; }
+    .c-row-dec td { color: #b71c1c; font-weight: 600; }
+    .c-tbl-head-ndvi { background: #2e7d32; }
+    .c-tbl-head-lst  { background: #c62828; }
+    .c-tbl-head-lulc { background: #1565c0; }
+
+    /* change summary bar */
+    .chg-bar-wrap { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .chg-bar-item {
+      flex: 1 1 140px; border-radius: 6px; padding: 12px 14px; text-align: center;
+    }
+    .chg-bar-item .val { font-size: 22px; font-weight: 700; }
+    .chg-bar-item .lbl { font-size: 11px; margin-top: 3px; opacity: .85; }
+    .chg-inc { background: #e8f5e9; color: #1b5e20; }
+    .chg-stb { background: #f5f5f5; color: #555; }
+    .chg-dec { background: #ffebee; color: #b71c1c; }
+
+    /* key obs */
+    .obs-list { padding-left: 18px; margin: 0; }
+    .obs-list li { font-size: 13px; color: #444; margin: 8px 0; line-height: 1.65; }
+    .obs-list strong { color: #111; }
+
+    /* lulc table */
+    .lulc-tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 4px; }
+    .lulc-tbl thead { background: #e8f0fe; }
+    .lulc-tbl th {
+      padding: 9px 12px; text-align: right; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: #1a73e8;
+      border-bottom: 2px solid #c5d8fb;
+    }
+    .lulc-tbl th:first-child { text-align: left; }
+    .lulc-tbl td {
+      padding: 8px 12px; text-align: right; border-bottom: 1px solid #f0f0f0;
+      color: #444; font-variant-numeric: tabular-nums; font-size: 12px;
+    }
+    .lulc-tbl td:first-child { text-align: left; color: #111; font-weight: 600; }
+    .lulc-tbl tbody tr:hover td { background: #f5f8ff; }
+    .lulc-tbl tbody tr:last-child td { border-bottom: none; }
+    .td-pos { color: #2e7d32 !important; font-weight: 700 !important; }
+    .td-neg { color: #c62828 !important; font-weight: 700 !important; }
+
+    /* AI box */
+    .ai-box {
+      background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6px;
+      padding: 16px 20px; font-size: 13px; color: #444; line-height: 1.8;
+    }
+    .ai-box h1,.ai-box h2,.ai-box h3 { color: #1a73e8; margin: 14px 0 6px; font-size: 14px; font-weight: 700; }
+    .ai-box p { margin: 0 0 10px; }
+    .ai-box strong { color: #111; }
+    .ai-box code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 12px; color: #c62828; }
+
+    /* lim list */
+    .lim-list { padding-left: 18px; margin: 0; }
+    .lim-list li { font-size: 13px; color: #444; margin: 6px 0; line-height: 1.55; }
+
+    /* notice */
+    .notice-bar { background: #fff8e1; border: 1px solid #ffc107; color: #856404; padding: 10px 16px; border-radius: 6px; font-size: 13px; margin-bottom: 16px; display: none; }
+
+    .btn { display: inline-block; background: #1a73e8; color: #fff !important; padding: 6px 16px; border-radius: 4px; text-decoration: none; font-size: 12px; border: none; cursor: pointer; font-weight: 600; }
+    .btn:hover { background: #1557b0; }
+
+    @media (max-width: 700px) { .report-scroll { padding: 14px 12px 40px; } .r-card { padding: 14px 14px; } }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">Rajapeta Watershed GIS<small>Wanaparthy, Telangana · 2004–2024</small></div>
+    <nav>
+      <a href="/ndvi">NDVI</a>
+      <a href="/lst">LST</a>
+      <a href="/lulc">LULC</a>
+      <a class="active" href="/llm-report">LLM Report</a>
+      <a href="/charts">Charts</a>
+    </nav>
+  </header>
+
+  <div class="report-topbar">
+    <span id="llm-status">Checking Mistral…</span>
+    <button class="btn" id="regenerate">⟳ Regenerate AI Interpretation</button>
+  </div>
+
+  <div class="report-scroll">
+    <div class="report-inner">
+      <div class="notice-bar" id="notice"></div>
+      <div id="report-body"><p style="color:#888;font-size:13px">Loading report…</p></div>
+    </div>
+  </div>
+</div>
+<script src="js/llm.js"></script>
+</body>
+</html>

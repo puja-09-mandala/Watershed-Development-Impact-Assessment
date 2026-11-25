@@ -1,0 +1,11 @@
+class_id,longitude,latitude,year,class_name
+1,78.0145,16.3530,2004,Water
+2,78.0165,16.3545,2004,Vegetation
+3,78.0190,16.3560,2004,Built-up
+4,78.0215,16.3575,2004,Barren Land
+5,78.0240,16.3590,2004,Agricultural/Cropland
+1,78.0150,16.3535,2024,Water
+2,78.0170,16.3550,2024,Vegetation
+3,78.0195,16.3565,2024,Built-up
+4,78.0220,16.3580,2024,Barren Land
+5,78.0245,16.3595,2024,Agricultural/Cropland

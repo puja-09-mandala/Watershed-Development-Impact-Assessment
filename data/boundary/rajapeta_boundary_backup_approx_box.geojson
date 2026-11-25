@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "name": "Rajapeta_Village_Boundary_PLACEHOLDER",
+  "crs": { "type": "name", "properties": { "name": "EPSG:4326" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "village": "Rajapeta (Rajapet)",
+        "mandal": "Wanaparthy Mandal",
+        "district": "Wanaparthy",
+        "state": "Telangana",
+        "note": "Placeholder extent near Wanaparthy. Replace this file with the official Rajapeta village polygon before final analysis."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [78.040, 16.350],
+          [78.095, 16.350],
+          [78.095, 16.390],
+          [78.040, 16.390],
+          [78.040, 16.350]
+        ]]
+      }
+    }
+  ]
+}

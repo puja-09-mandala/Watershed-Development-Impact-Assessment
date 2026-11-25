@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Rajapeta NDVI Analysis</title>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+
+<body data-analysis="ndvi">
+
+
+<header class="map-header">
+
+    <div class="header-left">
+
+        <h1>Rajapeta | NDVI Analysis</h1>
+
+        <p>
+            Vegetation Dynamics · 2004 - 2024
+        </p>
+
+    </div>
+
+
+    <a href="index.html"
+       class="home-button">
+        ← Home
+    </a>
+
+</header>
+
+
+<div class="analysis-toolbar">
+
+    <button
+        class="analysis-btn active"
+        data-year="2004">
+
+        NDVI 2004
+
+    </button>
+
+
+    <button
+        class="analysis-btn"
+        data-year="2024">
+
+        NDVI 2024
+
+    </button>
+
+
+    <button
+        class="analysis-btn"
+        data-year="change">
+
+        NDVI Change
+
+    </button>
+
+</div>
+
+
+<div id="map"></div>
+
+
+<div id="legend"
+     class="legend">
+</div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/georaster"></script>
+
+<script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
+
+<script src="map.js"></script>
+
+</body>
+
+</html>

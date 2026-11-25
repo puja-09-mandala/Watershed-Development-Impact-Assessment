@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NDVI | Rajapeta Watershed</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">Rajapeta Watershed GIS<small>Wanaparthy, Telangana · 2004–2024</small></div>
+    <nav>
+      <a class="active" href="/ndvi">NDVI</a>
+      <a href="/lst">LST</a>
+      <a href="/lulc">LULC</a>
+      <a href="/llm-report">LLM Report</a>
+      <a href="/charts">Charts</a>
+    </nav>
+  </header>
+
+  <div class="map-page">
+    <div id="notice"></div>
+    <div id="map"></div>
+
+    <!-- Basemap toggle — top-left -->
+    <div class="gee-panel gee-basemap">
+      <button class="gee-bm-btn active" data-bm="topo">Map</button>
+      <button class="gee-bm-btn" data-bm="imagery">Satellite</button>
+    </div>
+
+    <!-- Layers panel — top-right -->
+    <div class="gee-panel gee-layers">
+      <div class="gee-layers-header">
+        <span>NDVI Layers</span>
+      </div>
+      <div id="layer-panel"></div>
+    </div>
+
+    <!-- Legend — bottom-left -->
+    <div class="gee-panel gee-legend">
+      <div class="gee-legend-title">Legend</div>
+      <div id="legend-content"><p class="leg-note">Loading…</p></div>
+    </div>
+
+    <!-- Stats — bottom-right -->
+    <div class="gee-panel gee-stats">
+      <div class="gee-stats-title">Statistics</div>
+      <div id="stats-content"><div class="stat-row"><span>Loading…</span></div></div>
+    </div>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/map.js"></script>
+<script>
+  initMapPage({
+    kind: "ndvi",
+    layerKeys: ["ndvi_2004", "ndvi_2024", "ndvi_change"],
+    labels: {
+      ndvi_2004:   "NDVI 2004",
+      ndvi_2024:   "NDVI 2024",
+      ndvi_change: "Change (2024−2004)"
+    }
+  });
+</script>
+</body>
+</html>
