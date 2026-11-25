@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<<<<<<< HEA
     # Rajapeta Watershed CNN-LSTM Academic System
 
 Spatio-temporal assessment of vegetation, land-surface temperature, and optional land use/land cover for **Rajapeta (Rajapet) Village, Wanaparthy Mandal, Wanaparthy District, Telangana, India (2004–2024)**.
