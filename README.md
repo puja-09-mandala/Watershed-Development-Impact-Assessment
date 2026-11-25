@@ -1,3 +1,4 @@
+<<<<<<< HEAD
     # Rajapeta Watershed CNN-LSTM Academic System
 
 Spatio-temporal assessment of vegetation, land-surface temperature, and optional land use/land cover for **Rajapeta (Rajapet) Village, Wanaparthy Mandal, Wanaparthy District, Telangana, India (2004–2024)**.
@@ -66,3 +67,49 @@ Outputs:
 ## Architecture
 
 Satellite data → preprocess / cloud mask / median composite / scale / clip → GeoTIFF → NDVI + LST + LULC → 128×128 patches → temporal stack → normalize → train/test → CNN → LSTM → reconstruction → change detection → statistics → Mistral LLM → report + 5-page Web GIS.
+=======
+# Spatio-Temporal Assessment of Watershed Development Impacts
+
+## Overview
+
+This project analyzes watershed development impacts in Rajapet watershed,Wanaparthydistrict between 2004 and 2024 using Google Earth Engine and Landsat satellite imagery.
+
+## Technologies
+
+- Google Earth Engine
+- JavaScript
+- Remote Sensing
+- GIS
+- Landsat 5
+- Landsat 8
+
+## Features
+
+- NDVI Analysis
+- Land Surface Temperature (LST)
+- Rule-Based LULC Classification
+- Multi-temporal Change Detection
+- Interactive Layer Visualization
+
+## Study Area
+
+Wanaparthy District, Telangana, India
+
+## Dataset
+
+- Landsat 5 Collection 2 Level-2
+- Landsat 7 Collection 2 Level-2
+- Landsat 8 Collection 2 Level-2
+- FAO GAUL Administrative Boundaries
+
+## Outputs
+
+- NDVI Maps (2004 & 2024)
+- LST Maps (2004 & 2024)
+- LULC Maps (2004 & 2024)
+- Watershed Change Detection
+
+## Author
+
+Pujitha Mandala
+>>>>>>> origin/main
